@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model products {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  description      String?
+  current_price    Decimal    @db.Decimal(10, 2)
+  competitor_price Decimal?   @db.Decimal(10, 2)
+  cost_price       Decimal?   @db.Decimal(10, 2)
+  image_url        String?
+  category         String?
+  stock_level      Int        @default(100)
+  featured         Boolean?   @default(false)
+  created_at       DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime   @default(now()) @db.Timestamptz(6)
+  units_sold       Int?       @default(0)
+  units_ordered    Int?       @default(0)
+  optimized        optimized?
+}
+
+model optimized {
+  id              String   @id @db.Uuid
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  optimized_price BigInt?
+  justification   String?
+  product         products @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
